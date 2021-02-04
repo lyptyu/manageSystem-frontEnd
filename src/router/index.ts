@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw} from "vue-router";
 import Login from "@/views/login/Login.vue";
 import Home from "@/views/home/Home.vue";
+import Welcome from "@/subpages/welcome/Welcome.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -13,7 +14,14 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/home",
-    component: Home
+    component: Home,
+    redirect:'/welcome',
+    children:[
+      {
+        path:'/welcome',
+        component:Welcome
+      }
+    ]
   }
 ];
 
