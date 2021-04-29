@@ -2,7 +2,7 @@
   <div class="home_header">
     <div>
       <img src="../../../assets/img/logo.png" alt="" class="home_logo">
-      <span>电商后台管理系统</span>
+      <span>工资考勤管理系统</span>
     </div>
     <el-button type="info" @click="logout">退出</el-button>
   </div>

@@ -22,12 +22,12 @@
 </template>
 
 <script lang="ts">
-import {reactive, toRefs} from "vue";
+import {reactive, toRefs, defineComponent} from "vue";
 import HomeHeader from "@/views/home/components/HomeHeader.vue";
 import HomeAside from "@/views/home/components/HomeAside.vue";
 import {homeDate} from "@/utils/interface/home/home";
 
-export default {
+export default defineComponent({
   name: "Home",
   components: {
     HomeHeader,
@@ -46,7 +46,7 @@ export default {
       toggleCollapse
     };
   }
-};
+});
 </script>
 
 <style scoped lang="scss">

@@ -5,13 +5,16 @@
   </div>
 </template>
 
-<script>
-
-
-export default {
+<script lang="ts">
+import {defineComponent , provide } from 'vue'
+import * as echarts from 'echarts'
+export default defineComponent({
   name: "App",
+  setup(){
+    provide('ec',echarts)
+  },
   components: {}
-}
+})
 </script>
 
 <style>

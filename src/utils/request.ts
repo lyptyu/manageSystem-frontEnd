@@ -3,7 +3,7 @@ import axios from "axios";
 //创建axios
 const service = axios.create(
   {
-    baseURL: `http://127.0.0.1:8888/api/private/v1/`
+    baseURL: `http://127.0.0.1:3000`
   }
 );
 

@@ -6,7 +6,7 @@ interface menuList {
 interface homeAsideDate {
   menuList: Array<menuList>;
   iconsObj: object;
-
+  activePath:string
 }
 interface homeDate{
   //是否折叠

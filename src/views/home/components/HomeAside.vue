@@ -8,6 +8,7 @@
       :collapse="isCollapse"
       :collapse-transition="false"
       :router="true"
+      :default-active="activePath"
   >
     <!--一级菜单-->
     <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
@@ -16,7 +17,7 @@
         <span>{{ item.authName }}</span>
       </template>
       <!--二级菜单-->
-      <el-menu-item :index="`/${subitem.path}`" v-for="subitem in item.children" :key="subitem.id">
+      <el-menu-item :index="`/${subitem.path}`" v-for="subitem in item.children" :key="subitem.id" @click="saveNavState(`/${subitem.path}`)">
         <template #title>
           <i class="el-icon-menu"></i>
           <span>{{ subitem.authName }}</span>
@@ -41,25 +42,37 @@ export default defineComponent({
     const data: homeAsideDate = reactive({
       menuList: [],
       iconsObj: {
-        "125": "iconfont icon-user",
-        "103": "iconfont icon-tijikongjian",
-        "101": "iconfont icon-shangpin",
-        "102": "iconfont icon-danju",
-        "145": "iconfont icon-baobiao"
+        "101": "iconfont icon-user",
+        "102": "iconfont icon-tijikongjian",
+        "103": "iconfont icon-danju",
+        "104": "iconfont icon-shangpin",
+        "105": "iconfont icon-baobiao",
+        "106": "el-icon-s-custom"
       },
+      activePath:''  //被激活的链接地址
     });
+
     onBeforeMount(async () => {
       const {data: res} = await api_getMenu();
-      console.log(res);
+      // console.log('homeAside',res);
       if (res.meta.status !== 200) return ElMessage.error(res.meta.msg);
+      data.activePath=window.sessionStorage.getItem('activePath')!
       data.menuList = res.data;
+
+
     });
     //控制侧边栏折叠展开方法
     const isCollapse = computed(() => props.isCollapse);
     console.log(isCollapse.value);
+    //保存链接激活状态
+    const saveNavState=(activePath:string)=>{
+      window.sessionStorage.setItem('activePath',activePath)
+      data.activePath=activePath
+    }
     return {
       ...toRefs(data),
-      isCollapse
+      isCollapse,
+      saveNavState
     };
   }
 });

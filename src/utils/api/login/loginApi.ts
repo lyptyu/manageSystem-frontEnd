@@ -4,7 +4,7 @@ import {loginForm} from "@/utils/interface/login/login";
 const api_login = (data: loginForm) => {
   return service.request({
     method: "POST",
-    url: "login",
+    url: "/users/login",
     data
   });
 };

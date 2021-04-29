@@ -82,8 +82,8 @@ export default defineComponent({
         if (!valid) return;
         //发送登录网络请求
         const {data: res} = await api_login(data.loginForm);
-        console.log(res);
-        if (res.meta.status !== 200) return ElMessage({type: "error", message: "登录失败", duration: 1800});
+        console.log('login:',res);
+        if (res.meta.code !== 200) return ElMessage({type: "error", message: "登录失败", duration: 1800});
         ElMessage({type: "success", message: "登录成功", duration: 1800});
         //登录成功后将token保存到session
         window.sessionStorage.setItem("token", res.data.token);
