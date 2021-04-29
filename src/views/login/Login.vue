@@ -8,17 +8,22 @@
       <!-- 登录表单区域 -->
       <login-form/>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {defineComponent,reactive,toRefs} from "vue";
 import LoginForm from "@/views/login/components/LoginForm.vue";
+
 export default defineComponent({
   name: "Login",
   components: {
     LoginForm,
+
+  },
+  setup(){
+
+
   }
 });
 </script>
