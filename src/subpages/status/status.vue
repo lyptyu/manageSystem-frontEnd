@@ -170,26 +170,26 @@ export default defineComponent({
         later: [
           {
             required: true,
-            message: "请输入员工id",
+            message: "请输入员工迟到早退次数",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 2,
+            message: "请输入1-30之间的数字",
             trigger: "blur"
           }
         ],
         absent: [
           {
             required: true,
-            message: "请输入员工id",
+            message: "请输入缺勤旷工次数",
             trigger: "blur"
           },
           {
             min: 1,
             max: 8,
-            message: "员工姓名在1-5个字符之间",
+            message: "请输入1-30之间的数字",
             trigger: "blur"
           }
         ],
@@ -232,26 +232,26 @@ export default defineComponent({
         later: [
           {
             required: true,
-            message: "请输入员工id",
+            message: "请输入迟到早退次数",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 2,
+            message: "请输入1-30之间的数字",
             trigger: "blur"
           }
         ],
         absent: [
           {
             required: true,
-            message: "请输入员工id",
+            message: "请输入缺勤旷工次数",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 2,
+            message: "员工姓名在1-30个字符之间",
             trigger: "blur"
           }
         ],

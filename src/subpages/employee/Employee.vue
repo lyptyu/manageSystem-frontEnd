@@ -191,112 +191,41 @@ export default defineComponent({
         role_id: ""
       },
       addFormRules: {
-        id: [
-          {
-            required: true,
-            message: "请输入id",
-            trigger: "blur"
-          },
-          {
-            min: 1,
-            max: 5,
-            message: "员工id在1-5个字符之间",
-            trigger: "blur"
-          }
-        ],
-        name: [
-          {
-            required: true,
-            message: "请输入员工名称",
-            trigger: "blur"
-          },
-          {
-            min: 2,
-            max: 8,
-            message: "员工姓名在2-8个字符之间",
-            trigger: "blur"
-          }
+        id: [ 
+          {required: true, message: "请输入id", trigger: "blur"},
+          {min: 1,max: 5,message: "员工id在1-5个字符之间",trigger: "blur"}
+          ],
+        name: [  
+          {required: true, message: "请输入员工名称", trigger: "blur" },
+          { min: 2, max: 8,message: "员工姓名在2-8个字符之间", trigger: "blur" }
         ],
         dept_id: [
-          {
-            required: true,
-            message: "请输入部门id",
-            trigger: "blur"
-          },
-          {
-            min: 1,
-            max: 3,
-            message: "部门id在1-3个字符之间",
-            trigger: "blur"
-          }
+          { required: true, message: "请输入部门id", trigger: "blur" },
+          { min: 1, max: 3, message: "部门id在1-3个字符之间", trigger: "blur" }
         ],
         education: [
-          {
-            required: true,
-            message: "请输入学历",
-            trigger: "blur"
-          },
-          {
-            validator:checkEducation,
-            trigger:'blur'
-          }
+          {required: true, message: "请输入学历",  trigger: "blur" },
+          { validator:checkEducation, trigger:'blur'  }
         ],
         email: [
-          {
-            required: true,
-            message: "请输入邮箱",
-            trigger: "blur"
-          },
-          {
-            validator:checkEmail,
-            trigger:'blur'
-          }
+          { required: true,  message: "请输入邮箱",trigger: "blur" },
+          { validator:checkEmail,   trigger:'blur'  }
         ],
         experience: [
-          {
-            required: true,
-            message: "请输入工作经验",
-            trigger: "blur"
-          },
-          {
-            validator:checkExperience,
-            trigger:'blur'
-          }
+          {  required: true, message: "请输入工作经验",  trigger: "blur"   },
+          {  validator:checkExperience,   trigger:'blur'   }
         ],
         gender: [
-          {
-            required: true,
-            message: "请输入性别",
-            trigger: "blur"
-          },
-          {
-            validator:checkGender,
-            trigger:'blur'
-          }
+          {  required: true,     message: "请输入性别",    trigger: "blur"  },
+          { validator:checkGender, trigger:'blur'}
         ],
         phone: [
-          {
-            required: true,
-            message: "请输入手机号",
-            trigger: "blur"
-          },
-          {
-            validator:checkMobile,
-            trigger:'blur'
-          }
+          {   required: true,  message: "请输入手机号", trigger: "blur"  },
+          { validator:checkMobile, trigger:'blur' }
         ],
         role_id: [
-          {
-            required: true,
-            message: "请输入岗位id",
-            trigger: "blur"
-          },
-          {
-            min: 1,
-            max: 3,
-            message: "岗位id在1-3个字符自减",
-            trigger: "blur"
-          }
+          {  required: true,  message: "请输入岗位id", trigger: "blur" },
+          {  min: 1, max: 3, message: "岗位id在1-3个字符自减",   trigger: "blur" }
         ],
       },
       //修改

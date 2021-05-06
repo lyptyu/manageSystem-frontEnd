@@ -50,7 +50,7 @@
   </div>
   <!--添加部门对话框-->
   <el-dialog
-      title="添加部门"
+      title="添加权限"
       v-model="addDialogVisible"
       width="50%"
       @close="addDialogClosed">
@@ -136,33 +136,33 @@ export default defineComponent({
           {
             min: 1,
             max: 5,
-            message: "部门id在1-5个字符之间",
+            message: "权限id在1-5个字符之间",
             trigger: "blur"
           }
         ],
         username: [
           {
             required: true,
-            message: "请输入部门名称",
+            message: "请输入用户名",
             trigger: "blur"
           },
           {
             min: 2,
             max: 8,
-            message: "部门蒙城在2-8个字符之间",
+            message: "用户名在2-8个字符之间",
             trigger: "blur"
           }
         ],
         password: [
           {
             required: true,
-            message: "请输入部门等级",
+            message: "请输入密码",
             trigger: "blur"
           },
           {
             min: 1,
             max: 8,
-            message: "部门id在1-8个字符之间",
+            message: "密码在1-8个字符之间",
             trigger: "blur"
           }
         ],
@@ -184,14 +184,14 @@ export default defineComponent({
           {
             min: 1,
             max: 5,
-            message: "部门id在1-5个字符之间",
+            message: "权限id在1-5个字符之间",
             trigger: "blur"
           }
         ],
         username: [
           {
             required: true,
-            message: "请输入部门名称",
+            message: "请输入用户名",
             trigger: "blur"
           },
           {
@@ -204,13 +204,13 @@ export default defineComponent({
         password: [
           {
             required: true,
-            message: "请输入部门等级",
+            message: "请输入密码",
             trigger: "blur"
           },
           {
             min: 1,
             max: 8,
-            message: "部门id在1-8个字符之间",
+            message: "密码id在1-8个字符之间",
             trigger: "blur"
           }
         ],

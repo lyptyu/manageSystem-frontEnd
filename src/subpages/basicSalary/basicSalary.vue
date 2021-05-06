@@ -54,7 +54,7 @@
   </div>
   <!--添加部门对话框-->
   <el-dialog
-      title="添加考勤"
+      title="添加工资"
       v-model="addDialogVisible"
       width="50%"
       @close="addDialogClosed">
@@ -86,7 +86,7 @@
   </el-dialog>
   <!-- 修改部门对话框 -->
   <el-dialog
-      title="部门信息修改"
+      title="工资信息修改"
       v-model="editDialogVisible"
       width="50%"
       @close="editDialogClosed">
@@ -194,39 +194,39 @@ export default defineComponent({
         basic: [
           {
             required: true,
-            message: "请输入日期",
+            message: "请输入基本工资",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 6,
+            message: "基本工资在1-6个字符之间",
             trigger: "blur"
           }
         ],
         full_overtime: [
           {
             required: true,
-            message: "请输入员工上午打卡时间",
+            message: "请输入员工全勤奖金",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 6,
+            message: "员工姓名在1-6个字符之间",
             trigger: "blur"
           }
         ],
         project: [
           {
             required: true,
-            message: "请输入员工下午打卡时间",
+            message: "请输入员工项目奖金",
             trigger: "blur"
           },
           {
             min: 1,
             max: 8,
-            message: "员工姓名在1-5个字符之间",
+            message: "员工项目奖金在1-6个字符之间",
             trigger: "blur"
           }
         ],
@@ -270,39 +270,39 @@ export default defineComponent({
         basic: [
           {
             required: true,
-            message: "请输入日期",
+            message: "请输入基本工资",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 6,
+            message: "员工基本工资在1-6个字符之间",
             trigger: "blur"
           }
         ],
         full_overtime: [
           {
             required: true,
-            message: "请输入员工上午打卡时间",
+            message: "请输入员工全勤奖金",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 6,
+            message: "员工全勤奖金在1-6个字符之间",
             trigger: "blur"
           }
         ],
         project: [
           {
             required: true,
-            message: "请输入员工下午打卡时间",
+            message: "请输入员工项目奖金",
             trigger: "blur"
           },
           {
             min: 1,
-            max: 8,
-            message: "员工姓名在1-5个字符之间",
+            max: 6,
+            message: "员工项目奖金在1-6个字符之间",
             trigger: "blur"
           }
         ],
