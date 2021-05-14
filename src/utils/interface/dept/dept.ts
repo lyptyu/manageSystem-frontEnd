@@ -26,7 +26,14 @@ interface deptData {
     name: string,
     grade: string,
   },
-  editFormRules:{}
+  editFormRules:{},
+  showRoleDialog:boolean,
+  roleListInDept:Array<any>,
+  addRoleDialogVisible:boolean,
+  addRoleForm:any,
+  roleTotal:number,
+  deptName:string,
+  deptId:number
 }
 
 export {

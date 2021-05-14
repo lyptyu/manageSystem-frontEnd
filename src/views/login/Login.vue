@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <div class="login_title">工资考勤管理系统</div>
     <div class="box">
       <!--头像区域-->
       <div class="avatar">
@@ -66,5 +67,11 @@ export default defineComponent({
       background-color: #fff;
     }
   }
+}
+.login_title{
+  color: white;
+  font-size: 80px;
+  width: 100%;
+  text-align: center;
 }
 </style>

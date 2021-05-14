@@ -22,13 +22,20 @@
         </el-col>
       </el-row>
       <!-- 用户列表区域 -->
-      <el-table :data="deptList"  stripe>
+      <el-table :data="deptList" stripe>
         <el-table-column label="部门id" prop="id"></el-table-column>
         <el-table-column label="部门名称" prop="name"></el-table-column>
         <el-table-column label="部门等级" prop="grade"></el-table-column>
         <el-table-column label="创建时间" prop="created"></el-table-column>
         <el-table-column label="修改时间" prop="changed"></el-table-column>
-        <el-table-column label="版本号" prop="version"></el-table-column>
+        <el-table-column label="岗位信息">
+          <template #default="scope">
+            <!-- 查看 -->
+            <el-button size="mini" type="warning"
+                       @click="showRoleInDept(scope.row.id)">查看
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="120px">
           <template #default="scope">
             <!-- 修改 -->
@@ -44,7 +51,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
+          :page-sizes="[10, 20, 50, 100]"
           :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total">
@@ -58,7 +65,7 @@
       width="50%"
       @close="addDialogClosed">
     <div>
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+      <el-form :model="addForm" :rules="addFormRules" ref="addRoleFormRef" label-width="70px">
         <el-form-item label="id" prop="id">
           <el-input v-model="addForm.id"></el-input>
         </el-form-item>
@@ -102,11 +109,100 @@
     </span>
     </template>
   </el-dialog>
+  <!-- 查看岗位信息 -->
+  <el-dialog
+      title="查看岗位信息"
+      v-model="showRoleDialog"
+      width="50%"
+      @close="roleDialogClosed">
+    <el-row :gutter="20">
+      <el-col :span="4">
+        <el-button type="primary" @click="addRole">添加岗位</el-button>
+      </el-col>
+    </el-row>
+    <el-table :data="roleListInDept" stripe>
+      <el-table-column label="岗位id" prop="id"></el-table-column>
+      <el-table-column label="岗位名称" prop="name" width="120px"></el-table-column>
+      <el-table-column label="岗位等级" prop="rank"></el-table-column>
+      <el-table-column label="操作" width="120px">
+        <template #default="scope">
+          <!-- 修改 -->
+          <el-button size="mini" type="info" icon="el-icon-edit" @click="showRoleEditDialog(scope.row.id)"></el-button>
+          <!-- 删除 -->
+          <el-button size="mini" type="danger" icon="el-icon-delete"
+                     @click="removeRoleById(scope.row.id)"></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-dialog>
+  <!-- 添加岗位 -->
+  <el-dialog
+      title="添加岗位"
+      v-model="addRoleDialogVisible"
+      width="50%"
+      @close="addRoleDialogVisible = false">
+    <div>
+      <el-form :model="addRoleForm" :rules="addRoleFormRules" ref="addFormRef" label-width="80px">
+        <el-form-item label="id" prop="id">
+          <el-input v-model="addRoleForm.id" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="addRoleForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="等级" prop="rank">
+          <el-input v-model="addRoleForm.rank"></el-input>
+        </el-form-item>
+        <el-form-item label="来自部门" prop="from">
+          <el-input v-model="addRoleForm.from" disabled></el-input>
+        </el-form-item>
+      </el-form>
+    </div>
+    <template #footer>
+    <span class="dialog-footer">
+      <el-button @click="addRoleDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="addRoleConfirm(addRoleForm)">确 定</el-button>
+    </span>
+    </template>
+  </el-dialog>
+  <!-- 修改岗位 -->
+  <el-dialog
+      title="部门信息修改"
+      v-model="editRoleDialogVisible"
+      width="50%"
+      @close="editRoleDialogVisible = false">
+    <el-form :model="editRoleForm" :rules="editRoleFormRules" ref="editRoleFormRef" label-width="80px">
+      <el-form-item label="id" type="number">
+        <el-input v-model="editRoleForm.id" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="editRoleForm.name"></el-input>
+      </el-form-item>
+      <el-form-item label="等级" prop="rank">
+        <el-input v-model="editRoleForm.rank"></el-input>
+      </el-form-item>
+      <el-form-item label="来自部门" prop="from">
+        <el-input v-model="editRoleForm.from" disabled></el-input>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+    <span class="dialog-footer">
+      <el-button @click="editRoleDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editRoleConfirm">确 定</el-button>
+    </span>
+    </template>
+  </el-dialog>
 </template>
 
-<script lang="ts">
+<script>
 import {defineComponent, onBeforeMount, reactive, toRefs, ref} from "vue";
-import {api_getDept, api_addDept, api_getDeptByID, api_editPlus, api_removeDept} from "@/utils/api/dept/dept";
+import {
+  api_getDept,
+  api_addDept,
+  api_getDeptByID,
+  api_editPlus,
+  api_removeDept,
+  api_getRole, api_addRole, api_getRoleById, api_editRole, api_removeRole
+} from "@/utils/api/dept/dept";
 import {deptData} from "@/utils/interface/dept/dept";
 import {ElMessage, ElMessageBox} from "element-plus";
 import moment from "moment";
@@ -114,7 +210,7 @@ import moment from "moment";
 export default defineComponent({
   name: "dept",
   setup() {
-    const data: deptData = reactive({
+    const data = reactive({
       //查询
       queryInfo: {
         query: "",
@@ -153,14 +249,14 @@ export default defineComponent({
           {
             min: 2,
             max: 8,
-            message: "部门蒙城在2-8个字符之间",
+            message: "部门名称在2-8个字符之间",
             trigger: "blur"
           }
         ],
-        grade: [
+        rank: [
           {
             required: true,
-            message: "请输入部门等级",
+            message: "请输入岗位等级",
             trigger: "blur"
           },
           {
@@ -179,6 +275,125 @@ export default defineComponent({
         grade: "",
       },
       editFormRules: {},
+      showRoleDialog: false,
+      roleListInDept: [],
+      addRoleDialogVisible: false,
+      addRoleForm: {
+        id: "",
+        from: "",
+        rank: "",
+        name: ""
+      },
+      addRoleFormRules: {
+        id: [
+          {
+            required: true,
+            message: "请输入id",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "岗位id在1-5个字符之间",
+            trigger: "blur"
+          }
+        ],
+        name: [
+          {
+            required: true,
+            message: "请输入岗位名称",
+            trigger: "blur"
+          },
+          {
+            min: 2,
+            max: 8,
+            message: "部门蒙城在2-8个字符之间",
+            trigger: "blur"
+          }
+        ],
+        rank: [
+          {
+            required: true,
+            message: "请输入岗位等级",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 3,
+            message: "部门id在1-3个字符之间",
+            trigger: "blur"
+          }
+        ],
+        from: [
+
+          {
+            required: true,
+            message: "请输入岗位等级",
+            trigger: "blur"
+          },
+
+        ]
+      },
+      roleTotal: 0,
+      deptName: "",
+      deptId: 0,
+      editRoleDialogVisible: false,
+      editRoleForm: {
+        id: "",
+        from: "",
+        rank: "",
+        name: ""
+      },
+      editRoleFormRules: {
+        id: [
+          {
+            required: true,
+            message: "请输入id",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "岗位id在1-5个字符之间",
+            trigger: "blur"
+          }
+        ],
+        name: [
+          {
+            required: true,
+            message: "请输入岗位名称",
+            trigger: "blur"
+          },
+          {
+            min: 2,
+            max: 8,
+            message: "岗位名称在2-8个字符之间",
+            trigger: "blur"
+          }
+        ],
+        rank: [
+          {
+            required: true,
+            message: "请输入岗位等级",
+            trigger: "blur"
+          },
+          {
+            min: 0,
+            max: 3,
+            message: "岗位等级在1-3个字符之间",
+            trigger: "blur"
+          }
+        ],
+        from: [
+
+          {
+            required: true,
+            message: "请输入岗位等级",
+            trigger: "blur"
+          },
+
+        ]
+      },
     });
     const getUserList = async () => {
       const {data: res} = await api_getDept(data.queryInfo);
@@ -187,7 +402,7 @@ export default defineComponent({
       }
       data.deptList = res.data.deptList;
       data.total = res.data.total;
-      data.deptList.map(val => {
+      data.deptList.map((val) => {
         const created = moment(val.created).format("YYYY/MM/DD");
         const changed = moment(val.changed).format("YYYY/MM/DD");
         val.created = created;
@@ -199,28 +414,29 @@ export default defineComponent({
       await getUserList();
     });
     //监听 pageSize 改变的事件
-    const handleSizeChange = (newSize: any) => {
+    const handleSizeChange = (newSize) => {
       // console.log(newSize);
       data.queryInfo.pagesize = newSize;
       getUserList();
     };
     //监听页码值改变的事件
-    const handleCurrentChange = (newPage: any) => {
+    const handleCurrentChange = (newPage) => {
       // console.log(newPage);
       data.queryInfo.pagenum = newPage;
       getUserList();
     };
     //监听添加部门对话框的关闭时间
     const addFormRef = ref(null);
+
     //重置
     const addDialogClosed = () => {
-      const resetFields: () => void = addFormRef.value!["resetFields"];
+      const resetFields = addFormRef.value["resetFields"];
       resetFields();
     };
     //添加部门确认按钮
     const addDept = () => {
-      const resetFields: (valid: any) => void = addFormRef.value!["validate"];
-      resetFields(async (valid: boolean) => {
+      const resetFields = addFormRef.value["validate"];
+      resetFields(async (valid) => {
         if (!valid) {
           ElMessage({
             type: "error",
@@ -245,7 +461,7 @@ export default defineComponent({
 
     };
     //显示编辑部门的对话框
-    const showEditDialog = async (id: any) => {
+    const showEditDialog = async (id) => {
       data.editDialogVisible = true;
       const {data: res} = await api_getDeptByID(id);
       if (res.meta.code !== 200) {
@@ -256,20 +472,20 @@ export default defineComponent({
         return;
       }
       data.editForm = res.data[0];
-      data.editForm.grade! = data.editForm.grade!.toString();
+      data.editForm.grade = data.editForm.grade.toString();
       console.log("xxx", res.data[0]);
     };
     //监听修改部门对话框的关闭事件
     const editFormRef = ref(null);
     //重置编辑
     const editDialogClosed = () => {
-      const resetFields: () => void = editFormRef.value!["resetFields"];
+      const resetFields = editFormRef.value["resetFields"];
       resetFields();
     };
     //修改部门信息并提交
     const editDept = () => {
-      const validate: (valid: any) => void = editFormRef.value!["validate"];
-      validate(async (valid: boolean) => {
+      const validate = editFormRef.value["validate"];
+      validate(async (valid) => {
         if (!valid) {
           ElMessage({
             type: "error",
@@ -294,7 +510,7 @@ export default defineComponent({
       });
     };
     //根据id删除对应部门信息
-    const removeDeptById = async (id: number) => {
+    const removeDeptById = async (id) => {
       //弹框询问用户是否删除数据
       // data.deleteDialogVisible = true;
       const confirmResult = await ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -322,6 +538,98 @@ export default defineComponent({
         });
       }
     };
+    //查看岗位信息
+    const showRoleInDept = async (id) => {
+      data.showRoleDialog = true;
+      let deptName = "";
+      data.deptList.map(item => {
+        if (item.id === id) {
+          deptName = item.name;
+        }
+      });
+      data.deptName = deptName
+      data.deptId = id
+      console.log(id, deptName);
+      const res = await api_getRole();
+      let roleList = res.data.data.roleList;
+      let roleTotal = res.data.data.total
+      console.log("res", res);
+      let roleListInDept = roleList.filter((item) => {
+        console.log("from", item.from, deptName)
+        return item.from === deptName;
+      });
+
+      data.roleTotal = roleTotal
+      data.roleListInDept = roleListInDept
+      console.log("roleListInDept", roleListInDept, roleTotal);
+    };
+    //关闭岗位信息
+    const roleDialogClosed = () => {
+      data.showRoleDialog = false;
+    };
+    const editRole = () => {
+      data.showRoleDialog = false;
+    };
+    //添加岗位按钮
+    const addRole = () => {
+      data.addRoleDialogVisible = true
+      let total = data.roleTotal
+      data.addRoleForm.id = total + 1
+      data.addRoleForm.from = data.deptName
+    }
+    //确认添加岗位
+    const addRoleConfirm = async () => {
+      const res = await api_addRole(data.addRoleForm);
+      console.log("addRoleConfirmRes", res)
+      await showRoleInDept(data.deptId)
+      data.addRoleDialogVisible = false
+    }
+    //编辑岗位
+    const showRoleEditDialog = async (id) => {
+      data.editRoleDialogVisible = true;
+      const res = await api_getRoleById(id);
+      let editRes = res.data.data[0]
+      console.log("showRoleEditDialogRes", editRes.id)
+      data.editRoleForm.id = editRes.id
+      data.editRoleForm.name = editRes.name
+      data.editRoleForm.rank = editRes.rank.toString()
+      data.editRoleForm.from = editRes.from
+    }
+    const editRoleConfirm = async () => {
+      const res = await api_editRole(data.editRoleForm)
+      console.log("editRoleConfirm", res)
+      await showRoleInDept(data.deptId)
+      data.editRoleDialogVisible = false
+    }
+    //删除岗位
+    const removeRoleById = async (id)=>{
+      //弹框询问用户是否删除数据
+      // data.deleteDialogVisible = true;
+      const confirmResult = await ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).catch(err => err);
+      if (confirmResult !== "confirm") {
+        return ElMessage({
+          type: "info",
+          message: "已取消删除"
+        });
+      } else {
+        const {data: res} = await api_removeRole(id);
+        if (res.meta.code !== 200) {
+          return ElMessage({
+            type: "error",
+            message: "删除失败"
+          });
+        }
+        await showRoleInDept(data.deptId)
+        return ElMessage({
+          type: "success",
+          message: "删除成功"
+        });
+      }
+    }
     return {
       ...toRefs(data),
       handleSizeChange,
@@ -334,7 +642,15 @@ export default defineComponent({
       editFormRef,
       editDialogClosed,
       editDept,
-      removeDeptById
+      removeDeptById,
+      showRoleInDept,
+      roleDialogClosed,
+      editRole,
+      addRole,
+      addRoleConfirm,
+      showRoleEditDialog,
+      editRoleConfirm,
+      removeRoleById
     };
   }
 

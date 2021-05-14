@@ -8,9 +8,13 @@ import Overtime from "@/subpages/overtime/Overtime.vue";
 import basicSalary from "@/subpages/basicSalary/basicSalary.vue";
 import Right from "@/subpages/right/Right.vue";
 import Status from "@/subpages/status/status.vue";
-import RealSalary from "@/subpages/realSalary/RealSalary.vue"
-import AnalyseEmployee from "@/subpages/analyse/analyse_employee/analyseEmployee.vue"
-import AnalyseSalary from "@/subpages/analyse/analyse_salary/analyseSalary.vue"
+import RealSalary from "@/subpages/realSalary/RealSalary.vue";
+import AnalyseEmployee from "@/subpages/analyse/analyse_employee/analyseEmployee.vue";
+import AnalyseSalary from "@/subpages/analyse/analyse_salary/analyseSalary.vue";
+import EmpHome from "@/emppages/EmpHome/EmpHome.vue";
+import EmpInfo from "@/emppages/EmpInfo/EmpInfo.vue";
+import EmpTodayOvertime from "@/emppages/EmpTodayOvertime/empTodayOvertime.vue"
+import EmpMonthOvertime from '@/emppages/EmpMonthOvertime/EmpMonthOvertime.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -23,7 +27,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/home",
     component: Home,
-    redirect:'/welcome',
+    name: "home",
+    redirect: "/welcome",
     children: [
       {
         path: "/welcome",
@@ -59,14 +64,33 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "/analyse_employee",
-        component:AnalyseEmployee
+        component: AnalyseEmployee
       },
       {
         path: "/analyse_salary",
-        component:AnalyseSalary
+        component: AnalyseSalary
       }
     ]
-  }
+  },
+  {
+    path: "/emphome",
+    component: EmpHome,
+    name: "emphome",
+    children: [
+      {
+        path: "/empInfo",
+        component: EmpInfo
+      },
+      {
+        path: "/empTodayOvertime",
+        component: EmpTodayOvertime
+      },
+      {
+        path:"/empMonthOvertime",
+        component: EmpMonthOvertime
+      }
+    ]
+  },
 ];
 
 const router = createRouter({

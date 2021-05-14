@@ -5,7 +5,13 @@ const api_getMenu = ()=>{
     url: "menus",
   });
 }
-
+const api_getEmpMenu = ()=>{
+  return service.request({
+    method: "GET",
+    url: "empmenus",
+  });
+}
 export {
-  api_getMenu
+  api_getMenu,
+  api_getEmpMenu
 }

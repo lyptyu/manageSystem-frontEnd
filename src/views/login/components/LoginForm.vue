@@ -123,8 +123,14 @@ export default defineComponent({
         ElMessage({type: "success", message: "登录成功", duration: 1800});
         //登录成功后将token保存到session
         window.sessionStorage.setItem("token", res.data.token);
+        let chooseHome=''
+        if(res.meta.ismanager){
+          chooseHome = 'home'
+        }else{
+          chooseHome = 'emphome'
+        }
         setTimeout(() => {
-          router.push("/home");
+          router.push({name:chooseHome,query:{id:res.meta.id}});
         }, 2000);
 
 

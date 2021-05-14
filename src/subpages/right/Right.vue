@@ -26,6 +26,7 @@
         <el-table-column label="id" prop="id"></el-table-column>
         <el-table-column label="管理员账号" prop="username"></el-table-column>
         <el-table-column label="密码" prop="password"></el-table-column>
+        <el-table-column label="管理员权限" prop="isManagerStr"></el-table-column>
         <el-table-column label="操作" width="120px">
           <template #default="scope">
             <!-- 修改 -->
@@ -55,7 +56,7 @@
       width="50%"
       @close="addDialogClosed">
     <div>
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="90px">
         <el-form-item label="id" prop="id">
           <el-input v-model="addForm.id"></el-input>
         </el-form-item>
@@ -64,6 +65,9 @@
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="addForm.password"></el-input>
+        </el-form-item>
+        <el-form-item label="管理权限" prop="isManagerStr">
+          <el-input v-model="addForm.isManagerStr"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -90,7 +94,9 @@
       <el-form-item label="密码" prop="password">
         <el-input v-model="editForm.password"></el-input>
       </el-form-item>
-
+      <el-form-item label="管理权限" prop="isManagerStr">
+        <el-input v-model="editForm.isManagerStr"></el-input>
+      </el-form-item>
     </el-form>
     <template #footer>
     <span class="dialog-footer">
@@ -105,7 +111,8 @@
 import {defineComponent, onBeforeMount, reactive, toRefs, ref} from "vue";
 import {deptData} from "@/utils/interface/dept/dept";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {api_getUserList, api_addUser, api_getUserByID, api_editUser,api_removeUser} from "@/utils/api/right/right";
+import {api_getUserList, api_addUser, api_getUserByID, api_editUser, api_removeUser} from "@/utils/api/right/right";
+import {checkIsManagerStr} from "@/subpages/right/rightRules"
 
 export default defineComponent({
   name: "dept",
@@ -125,6 +132,7 @@ export default defineComponent({
         id: "",
         username: "",
         password: "",
+        isManagerStr: ""
       },
       addFormRules: {
         id: [
@@ -166,6 +174,17 @@ export default defineComponent({
             trigger: "blur"
           }
         ],
+        isManagerStr: [
+          {
+            required: true,
+            message: "请输入管理权限",
+            trigger: "blur"
+          },
+          {
+            validator: checkIsManagerStr,
+            trigger: "blur"
+          }
+        ],
       },
       //修改
       editDialogVisible: false,
@@ -173,6 +192,7 @@ export default defineComponent({
         id: "",
         username: "",
         password: "",
+        isManagerStr: ""
       },
       editFormRules: {
         id: [
@@ -197,7 +217,7 @@ export default defineComponent({
           {
             min: 2,
             max: 8,
-            message: "部门蒙城在2-8个字符之间",
+            message: "用户名在2-8个字符之间",
             trigger: "blur"
           }
         ],
@@ -214,6 +234,17 @@ export default defineComponent({
             trigger: "blur"
           }
         ],
+        isManagerStr: [
+          {
+            required: true,
+            message: "请输入管理权限",
+            trigger: "blur"
+          },
+          {
+            validator: checkIsManagerStr,
+            trigger: "blur"
+          }
+        ],
       },
     });
     const getUserList = async () => {
@@ -223,7 +254,7 @@ export default defineComponent({
       }
       data.userList = res.data.userList;
       data.total = res.data.total;
-      console.log(res);
+      console.log("getUserList", data.userList);
     };
     onBeforeMount(async () => {
       await getUserList();
@@ -257,6 +288,11 @@ export default defineComponent({
             message: "请检查数据是否正确"
           });
           return;
+        }
+        if(data.addForm.isManagerStr==="是"){
+          data.addForm.isManager = true
+        }else{
+          data.addForm.isManager = false
         }
         const {data: res} = await api_addUser(data.addForm);
         if (res.meta.code !== 200) {
@@ -308,6 +344,11 @@ export default defineComponent({
             message: "请检查数据是否正确"
           });
           return;
+        }
+        if(data.editForm.isManagerStr==="是"){
+          data.editForm.isManager = true
+        }else{
+          data.editForm.isManager = false
         }
         const {data: res} = await api_editUser(data.editForm);
         if (res.meta.code !== 200) {
