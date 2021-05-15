@@ -26,10 +26,13 @@
         <el-table-column label="id" prop="id"></el-table-column>
         <el-table-column label="员工id" prop="employee_id"></el-table-column>
         <el-table-column label="员工姓名" prop="employee_name"></el-table-column>
+        <el-table-column label="员工等级" prop="rank"></el-table-column>
         <el-table-column label="基本工资" prop="basic"></el-table-column>
-
         <el-table-column label="全勤奖金" prop="full_overtime"></el-table-column>
         <el-table-column label="项目奖金" prop="project"></el-table-column>
+        <el-table-column label="公积金比例" prop="fiveOneRate" width="100px"></el-table-column>
+        <el-table-column label="出差补贴" prop="outsideMoney"></el-table-column>
+        <el-table-column label="加班补贴" prop="moreWorkMoney"></el-table-column>
         <el-table-column label="操作" width="120px">
           <template #default="scope">
             <!-- 修改 -->
@@ -45,7 +48,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
+          :page-sizes="[10, 20, 50, 100]"
           :page-size="queryInfo.pagesize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total">
@@ -67,13 +70,22 @@
           <el-input v-model="addForm.employee_id"></el-input>
         </el-form-item>
         <el-form-item label="基本工资" prop="basic">
-          <el-input v-model="addForm.basic"></el-input>
+          <el-input v-model="addForm.basic" disabled></el-input>
         </el-form-item>
         <el-form-item label="全勤奖" prop="full_overtime">
           <el-input v-model="addForm.full_overtime"></el-input>
         </el-form-item>
         <el-form-item label="项目奖" prop="project">
           <el-input v-model="addForm.project"></el-input>
+        </el-form-item>
+        <el-form-item label="公积金比例" prop="fiveOneRate">
+          <el-input v-model="addForm.fiveOneRate"></el-input>
+        </el-form-item>
+        <el-form-item label="出差补贴" prop="outsideMoney">
+          <el-input v-model="addForm.outsideMoney"></el-input>
+        </el-form-item>
+        <el-form-item label="加班补贴" prop="moreWorkMoney">
+          <el-input v-model="addForm.moreWorkMoney"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -98,13 +110,22 @@
         <el-input v-model="editForm.employee_id"></el-input>
       </el-form-item>
       <el-form-item label="基本工资" prop="basic">
-        <el-input v-model="editForm.basic"></el-input>
+        <el-input v-model="editForm.basic" disabled></el-input>
       </el-form-item>
       <el-form-item label="全勤奖" prop="full_overtime">
         <el-input v-model="editForm.full_overtime"></el-input>
       </el-form-item>
       <el-form-item label="项目奖" prop="project">
         <el-input v-model="editForm.project"></el-input>
+      </el-form-item>
+      <el-form-item label="公积金比例" prop="fiveOneRate">
+        <el-input v-model="editForm.fiveOneRate"></el-input>
+      </el-form-item>
+      <el-form-item label="出差补贴" prop="outsideMoney">
+        <el-input v-model="editForm.outsideMoney"></el-input>
+      </el-form-item>
+      <el-form-item label="加班补贴" prop="moreWorkMoney">
+        <el-input v-model="editForm.moreWorkMoney"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -139,6 +160,7 @@ import {
 
 
 import {checkDate, checkStatus, checkTime} from "@/subpages/overtime/checkRules/overtimeRules"
+import {api_getRoleById} from "@/utils/api/dept/dept"
 
 export default defineComponent({
   name: "dept",
@@ -150,7 +172,7 @@ export default defineComponent({
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 2
+        pagesize: 10
       },
       basicSalaryList: [],
       total: 0,
@@ -159,10 +181,13 @@ export default defineComponent({
       addForm: {
         id: "",
         employee_id: "",
-        basic: "",
+        basic: "3000",
         full_overtime: "",
         project: "",
         status: "",
+        fiveOneRate: "",
+        outsideMoney: "",
+        moreWorkMoney: ""
       },
       addFormRules: {
         id: [
@@ -230,6 +255,45 @@ export default defineComponent({
             trigger: "blur"
           }
         ],
+        fiveOneRate: [
+          {
+            required: true,
+            message: "请输入五险一金比例",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 2,
+            message: "五险一金比例在0-12之间",
+            trigger: "blur"
+          }
+        ],
+        outsideMoney: [
+          {
+            required: true,
+            message: "请输入出差补贴",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "出差补贴在1-5位数之间",
+            trigger: "blur"
+          }
+        ],
+        moreWorkMoney: [
+          {
+            required: true,
+            message: "请输入加班津贴",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "加班补贴在1-5位数之间",
+            trigger: "blur"
+          }
+        ],
       },
       //修改
       editDialogVisible: false,
@@ -239,6 +303,9 @@ export default defineComponent({
         basic: "",
         full_overtime: "",
         project: "",
+        fiveOneRate: "",
+        outsideMoney: "",
+        moreWorkMoney: ""
       },
       editFormRules: {
         id: [
@@ -306,6 +373,45 @@ export default defineComponent({
             trigger: "blur"
           }
         ],
+        fiveOneRate: [
+          {
+            required: true,
+            message: "请输入五险一金比例",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 2,
+            message: "五险一金比例在0-12之间",
+            trigger: "blur"
+          }
+        ],
+        outsideMoney: [
+          {
+            required: true,
+            message: "请输入出差补贴",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "出差补贴在1-5位数之间",
+            trigger: "blur"
+          }
+        ],
+        moreWorkMoney: [
+          {
+            required: true,
+            message: "请输入加班津贴",
+            trigger: "blur"
+          },
+          {
+            min: 1,
+            max: 5,
+            message: "加班补贴在1-5位数之间",
+            trigger: "blur"
+          }
+        ],
       },
     });
     const getUserList = async () => {
@@ -314,12 +420,30 @@ export default defineComponent({
         ElMessage({type: "error", message: "服务器开小差了", duration: 1800});
       }
       data.basicSalaryList = res.data.basicSalaryList;
+      console.log("data.basicSalaryList", data.basicSalaryList)
       data.total = res.data.total;
-      data.basicSalaryList.map(async val => {
+      let mypromise = data.basicSalaryList.map(async val => {
 
         const {data: res2} = await api_getEmployeeByID(val.employee_id)
         val.employee_name = res2.data[0].name
+        const {data: res3} = await api_getRoleById(val.role_id)
+        val.rank = res3.data[0].rank
+        const {data: res4} = await api_editSalary(
+            {
+              id: val.id,
+              basic: val.rank * 3000,
+              employee_id: val.employee_id,
+              full_overtime: val.full_overtime,
+              project: val.project,
+              isFull_Overtime: val.isFull_Overtime,
+              fiveOneRate: val.fiveOneRate,
+              outsideMoney: val.outsideMoney,
+              moreWorkMoney: val.moreWorkMoney
+            }
+        )
       })
+      await Promise.all(mypromise)
+      console.log("gogogo", data.basicSalaryList)
     };
     onBeforeMount(async () => {
       await getUserList();
@@ -368,7 +492,7 @@ export default defineComponent({
         message: "添加基本工资情况成功"
       });
       data.addDialogVisible = false;
-      getUserList();
+      await getUserList();
     };
     //显示编辑部门的对话框
     const showEditDialog = async (id) => {

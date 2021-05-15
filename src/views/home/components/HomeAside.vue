@@ -47,7 +47,8 @@ export default defineComponent({
         "103": "iconfont icon-danju",
         "104": "iconfont icon-shangpin",
         "105": "iconfont icon-baobiao",
-        "106": "el-icon-s-custom"
+        "106": "el-icon-s-custom",
+        "107": "iconfont icon-shangpin"
       },
       activePath:''  //被激活的链接地址
     });

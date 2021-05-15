@@ -11,10 +11,15 @@ import Status from "@/subpages/status/status.vue";
 import RealSalary from "@/subpages/realSalary/RealSalary.vue";
 import AnalyseEmployee from "@/subpages/analyse/analyse_employee/analyseEmployee.vue";
 import AnalyseSalary from "@/subpages/analyse/analyse_salary/analyseSalary.vue";
+import OutsideExam from "@/subpages/outsideExam/outsideExam.vue"
 import EmpHome from "@/emppages/EmpHome/EmpHome.vue";
 import EmpInfo from "@/emppages/EmpInfo/EmpInfo.vue";
 import EmpTodayOvertime from "@/emppages/EmpTodayOvertime/empTodayOvertime.vue"
 import EmpMonthOvertime from '@/emppages/EmpMonthOvertime/EmpMonthOvertime.vue'
+import EmpBasicSalary from "@/emppages/EmpBasicSalary/EmpBasicSalary.vue"
+import EmpRealSalary from "@/emppages/EmpRealSalary/EmpRealSalary.vue"
+import EmpOutSideApply from "@/emppages/EmpOutSideApply/EmpOutSideApply.vue"
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -69,6 +74,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/analyse_salary",
         component: AnalyseSalary
+      },
+      {
+        path: "/outsideExam",
+        component: OutsideExam
       }
     ]
   },
@@ -88,7 +97,20 @@ const routes: Array<RouteRecordRaw> = [
       {
         path:"/empMonthOvertime",
         component: EmpMonthOvertime
-      }
+      },
+      {
+        path:"/empBasicSalary",
+        component: EmpBasicSalary
+      },
+      {
+        path:"/empRealSalary",
+        component: EmpRealSalary
+      },
+      {
+        path:"/empOutSideApply",
+        component: EmpOutSideApply
+      },
+
     ]
   },
 ];

@@ -16,7 +16,7 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="部门id" prop="dept_id">
-          <el-input v-model="editForm.dept_id"></el-input>
+          <el-input v-model="editForm.dept_id" disabled></el-input>
         </el-form-item>
         <el-form-item label="学历" prop="education">
           <el-input v-model="editForm.education"></el-input>
@@ -25,7 +25,7 @@
           <el-input v-model="editForm.email"></el-input>
         </el-form-item>
         <el-form-item label="经验" prop="experience">
-          <el-input v-model="editForm.experience"></el-input>
+          <el-input v-model="editForm.experience" disabled></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="gender">
           <el-input v-model="editForm.gender"></el-input>
@@ -34,7 +34,7 @@
           <el-input v-model="editForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="岗位" prop="role_id">
-          <el-input v-model="editForm.role_id"></el-input>
+          <el-input v-model="editForm.role_id" disabled></el-input>
         </el-form-item>
 
       </el-form>

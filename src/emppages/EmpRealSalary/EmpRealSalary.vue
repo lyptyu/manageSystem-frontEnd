@@ -13,19 +13,19 @@
           <!--  搜索框和添加区域  -->
           <el-input
               placeholder="请输入内容"
-              v-model="queryInfo.query"
+              v-model="searchTime"
               clearable
               @clear="getUserList"
           >
             <template #append>
-              <el-button icon="el-icon-search" @click="getUserList"></el-button>
+              <el-button icon="el-icon-search" @click="filterByTime(searchTime)"></el-button>
             </template>
           </el-input>
         </el-col>
       </el-row>
       <!-- 用户列表区域 -->
       <el-table :data="realList" stripe>
-        <el-table-column label="日期" prop="date"></el-table-column>
+        <el-table-column label="时间" prop="date"></el-table-column>
         <el-table-column label="员工id" prop="id"></el-table-column>
         <el-table-column label="员工姓名" prop="name"></el-table-column>
         <el-table-column label="基础工资" prop="basic"></el-table-column>
@@ -41,16 +41,6 @@
         <el-table-column label="实发工资" prop="real"></el-table-column>
       </el-table>
       <!-- 分页区域 -->
-      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryInfo.pagenum"
-          :page-sizes="[10, 20, 50, 100]"
-          :page-size="queryInfo.pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-      >
-      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -60,19 +50,23 @@ import {defineComponent, onBeforeMount, reactive, toRefs} from "vue";
 import {api_getReal} from "@/utils/api/real/real"
 import {api_getEmployeeByID} from "@/utils/api/employee/empolyee"
 import {ElMessage} from "element-plus";
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: "dept",
   setup() {
+    const router = useRouter()
     const data = reactive({
       //查询
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 10
+        pagesize: 10000
       },
       realList: [],
       total: 0,
+      id: router.currentRoute.value.query.id,
+      searchTime:"2021.5"
     });
     const getUserList = async () => {
       const {data: res} = await api_getReal(data.queryInfo);
@@ -85,13 +79,16 @@ export default defineComponent({
         const employeeInfo = await api_getEmployeeByID(val.employee_id)
         const name = employeeInfo.data.data[0].name
         val.name = name
-        val.isFull_OvertimeStr = val.isFull_Overtime?"是":"否"
+        val.isFull_OvertimeStr = val.isFull_Overtime ? "是" : "否"
+
       })
       await Promise.all(mypromise)
-      console.log('realList',data.realList);
+      data.realList = data.realList.filter(item => item.id === +data.id)
+      console.log("realList", data.realList);
     };
     onBeforeMount(async () => {
       await getUserList();
+      await filterByTime(data.searchTime)
     });
     //监听 pageSize 改变的事件
     const handleSizeChange = newSize => {
@@ -105,13 +102,44 @@ export default defineComponent({
       data.queryInfo.pagenum = newPage;
       getUserList();
     };
+    const filterByTime = async (time)=>{
+      const regDate = /^\d{4}(\-|\/|\.)\d{1,2}$/
+      if (regDate.test(time)) {
+        await getUserList();
+        let devide = ""
+        if (time.indexOf(".") >= 0) {
+          devide = "."
+        } else if (time.indexOf("/") > 0) {
+          devide = "/"
+        } else {
+          devide = "-"
+        }
+        let year = time.split(devide)[0];
+        let month = time.split(devide)[1];
+        console.log(year, month)
+        let realList = data.realList.filter(item => {
+          let itemYear = item.date.split("-")[0]
+          let itemMonth = item.date.split("-")[1]
+          return itemYear === year && itemMonth === month
+        })
+        console.log("overtimeList", realList)
+        data.realList = realList
+      } else {
+        ElMessage({
+          type: "error",
+          message: "请输入正确的年月"
+        })
+      }
+      console.log(data.realList)
+
+    }
 
     return {
       ...toRefs(data),
       handleSizeChange,
       handleCurrentChange,
       getUserList,
-
+      filterByTime
     };
   }
 });

@@ -30,6 +30,16 @@ const api_getBasicSalaryByID = (id: number | string) => {
     }
   });
 };
+const api_getBasicSalaryByEmployeeID = (employee_id: number | string) => {
+  return service.request({
+    method: "GET",
+    url: "salary/basicSalary/getBasicByEmployeeID",
+    params: {
+      employee_id
+    }
+  });
+};
+
 const api_editSalary = (data: any) => {
   return service.request({
     method: "PUT",
@@ -51,5 +61,6 @@ export {
   api_addBasicSalary,
   api_getBasicSalaryByID,
   api_editSalary,
-  api_removeSalary
+  api_removeSalary,
+  api_getBasicSalaryByEmployeeID
 }

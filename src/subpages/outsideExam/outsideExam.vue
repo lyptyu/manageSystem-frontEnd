@@ -3,52 +3,44 @@
     <!--  面包屑导航区域  -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>考勤管理</el-breadcrumb-item>
-      <el-breadcrumb-item>考勤状态管理</el-breadcrumb-item>
+      <el-breadcrumb-item>审批管理</el-breadcrumb-item>
+      <el-breadcrumb-item>出差审批</el-breadcrumb-item>
     </el-breadcrumb>
     <!--  卡片视图区域  -->
     <el-card>
       <el-row :gutter="20">
         <el-col :span="9">
           <!--  搜索框和添加区域  -->
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getUserList">
+          <el-input placeholder="请输入内容" v-model="filterName" clearable @clear="getUserList">
             <template #append>
-              <el-button icon="el-icon-search" @click="getUserList"></el-button>
+              <el-button icon="el-icon-search" @click="filterByName(filterName)"></el-button>
             </template>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addDialogVisible=true">添加状态</el-button>
+          <!--          <el-button type="primary" @click="addDialogVisible=true">添加状态</el-button>-->
         </el-col>
       </el-row>
       <!-- 用户列表区域 -->
-      <el-table :data="statusList" stripe>
+      <el-table :data="outsideApplyList" stripe>
         <el-table-column label="id" prop="id"></el-table-column>
-        <el-table-column label="时间" prop="date"></el-table-column>
         <el-table-column label="员工id" prop="employee_id"></el-table-column>
         <el-table-column label="员工姓名" prop="employee_name"></el-table-column>
-        <el-table-column label="迟到早退" prop="later"></el-table-column>
-        <el-table-column label="缺勤旷工" prop="absent"></el-table-column>
+        <el-table-column label="开始时间" prop="startDate"></el-table-column>
+        <el-table-column label="结束时间" prop="endDate"></el-table-column>
+        <el-table-column label="出差天数" prop="days"></el-table-column>
+        <el-table-column label="出发地" prop="fromArea"></el-table-column>
+        <el-table-column label="目的地" prop="toArea"></el-table-column>
+        <el-table-column label="出差津贴" prop="extraMoney"></el-table-column>
+        <el-table-column label="审批状态" prop="isExam"></el-table-column>
         <el-table-column label="操作" width="120px">
           <template #default="scope">
             <!-- 修改 -->
-            <el-button size="mini" type="info" icon="el-icon-edit" @click="showEditDialog(scope.row.id)"></el-button>
-            <!-- 删除 -->
-            <el-button size="mini" type="danger" icon="el-icon-delete"
-                       @click="removeDeptById(scope.row.id)"></el-button>
+            <el-button size="mini" type="warning" @click="showEditDialog(scope.row.id)">审批/查看</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
-      <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryInfo.pagenum"
-          :page-sizes="[1, 2, 5, 10]"
-          :page-size="queryInfo.pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total">
-      </el-pagination>
     </el-card>
   </div>
   <!--添加部门对话框-->
@@ -82,28 +74,46 @@
   </el-dialog>
   <!-- 修改部门对话框 -->
   <el-dialog
-      title="部门信息修改"
+      title="出差审批/查看"
       v-model="editDialogVisible"
       width="50%"
       @close="editDialogClosed">
-    <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px">
+    <el-form :model="editForm" ref="editFormRef" label-width="70px">
       <el-form-item label="id" prop="id">
-        <el-input v-model="editForm.id"></el-input>
+        <el-input v-model="editForm.id" disabled></el-input>
       </el-form-item>
       <el-form-item label="员工id" prop="employee_id">
-        <el-input v-model="editForm.employee_id"></el-input>
+        <el-input v-model="editForm.employee_id" disabled></el-input>
       </el-form-item>
-      <el-form-item label="迟到早退" prop="later">
-        <el-input v-model="editForm.later"></el-input>
+      <el-form-item label="出发时间" prop="startTime">
+        <el-input v-model="editForm.startDate" disabled></el-input>
       </el-form-item>
-      <el-form-item label="缺勤旷工" prop="absent">
-        <el-input v-model="editForm.absent"></el-input>
+      <el-form-item label="返程时间" prop="endTime">
+        <el-input v-model="editForm.endDate" disabled></el-input>
       </el-form-item>
+      <el-form-item label="出差天数" prop="days">
+        <el-input v-model="editForm.days" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="出发地" prop="fromArea">
+        <el-input v-model="editForm.fromArea" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="目的地" prop="toArea">
+        <el-input v-model="editForm.toArea" disabled></el-input>
+      </el-form-item>
+      <el-form-item label="审批状态" prop="toArea">
+        <el-input v-model="editForm.isExam" disabled></el-input>
+      </el-form-item>
+
+      <el-form-item label="出差津贴" prop="extraMoney">
+        <el-input v-model="editForm.extraMoney" disabled></el-input>
+      </el-form-item>
+
     </el-form>
     <template #footer>
     <span class="dialog-footer">
       <el-button @click="editDialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="editDept">确 定</el-button>
+      <el-button type="success" @click="examPass">审批通过</el-button>
+      <el-button type="danger" @click="examDeny">审批拒绝</el-button>
     </span>
     </template>
   </el-dialog>
@@ -117,7 +127,19 @@ import {
 } from "@/utils/api/employee/empolyee";
 
 
-import {api_getStatusList,api_addStatus,api_getStatusByID,api_editStatus,api_removeStatus} from "@/utils/api/status/status"
+import {
+  api_getStatusList,
+  api_addStatus,
+  api_getStatusByID,
+  api_editStatus,
+  api_removeStatus
+} from "@/utils/api/status/status"
+import {api_getOutsideApply, api_getOutsideApplyByID, api_editOutsideApply} from "@/utils/api/outside/outside"
+import {
+  api_editSalary,
+  api_getBasicSalaryByEmployeeID,
+  api_getBasicSalaryByID
+} from "@/utils/api/basicSalary/basicSalary"
 
 export default defineComponent({
   name: "dept",
@@ -129,9 +151,9 @@ export default defineComponent({
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 2
+        pagesize: 10000
       },
-      statusList: [],
+      outsideApplyList: [],
       total: 0,
       //增加
       addDialogVisible: false,
@@ -202,6 +224,13 @@ export default defineComponent({
         employee_id: "",
         later: "",
         absent: "",
+        startDate: "",
+        endDate: "",
+        days: "",
+        fromArea: "",
+        toArea: "",
+        isExam: "",
+        extraMoney: ""
       },
       editFormRules: {
         id: [
@@ -257,22 +286,25 @@ export default defineComponent({
           }
         ],
       },
+      filterName: ""
     });
     const getUserList = async () => {
-      const {data: res} = await api_getStatusList(data.queryInfo);
+      const {data: res} = await api_getOutsideApply(data.queryInfo);
       if (res.meta.code !== 200) {
         ElMessage({type: "error", message: "服务器开小差了", duration: 1800});
       }
-      data.statusList = res.data.statusList;
+      data.outsideApplyList = res.data.outsideApplyList;
       data.total = res.data.total;
-      data.statusList.map(async val => {
+      let promiseList = data.outsideApplyList.map(async val => {
 
         const {data: res2} = await api_getEmployeeByID(val.employee_id)
         val.employee_name = res2.data[0].name
       })
+      await Promise.all(promiseList)
     };
     onBeforeMount(async () => {
       await getUserList();
+      console.log("data.outsideApplyList", data.outsideApplyList)
     });
     //监听 pageSize 改变的事件
     const handleSizeChange = (newSize) => {
@@ -323,7 +355,7 @@ export default defineComponent({
     //显示编辑部门的对话框
     const showEditDialog = async (id) => {
       data.editDialogVisible = true;
-      const {data: res} = await api_getStatusByID(id);
+      const {data: res} = await api_getOutsideApplyByID(id);
       if (res.meta.code !== 200) {
         ElMessage({
           type: "error",
@@ -336,8 +368,7 @@ export default defineComponent({
         console.log(data.editForm[val]);
         data.editForm[val] = data.editForm[val].toString();
       });
-      console.log();
-      console.log("xxx", res.data[0]);
+      console.log("data.editForm1", data.editForm)
     };
     //监听修改部门对话框的关闭事件
     const editFormRef = ref(null);
@@ -402,6 +433,46 @@ export default defineComponent({
         });
       }
     };
+    const examPass = async () => {
+      if (data.editForm.isExam !== "未审批") {
+        ElMessage({
+          type:'error',
+          message: "您已经审批过啦~",
+          duration: 1500
+        })
+        return
+      }
+      data.editForm.isExam = "审批通过"
+      await api_editOutsideApply(data.editForm)
+      const res = await api_getBasicSalaryByEmployeeID(data.editForm.employee_id)
+      console.log("examPass", res.data.data[0])
+      let newSalary = JSON.parse(JSON.stringify(res.data.data[0]));
+      newSalary.outsideMoney += Number(data.editForm.extraMoney);
+      console.log("newSalary", newSalary, "xx", data.editForm.extraMoney)
+      await api_editSalary(newSalary)
+      data.editDialogVisible = false
+      await getUserList()
+
+    }
+    const examDeny = async () => {
+      if (data.editForm.isExam !== "未审批") {
+        ElMessage({
+          type:'error',
+          message: "您已经审批过啦~",
+          duration: 1500
+        })
+        return
+      }
+      data.editForm.isExam = "审批拒绝"
+      await api_editOutsideApply(data.editForm)
+      data.editDialogVisible = false
+      await getUserList()
+    }
+    const filterByName = async (name) => {
+      await getUserList()
+      let filterList = data.outsideApplyList.filter(item => item.employee_name.indexOf(name) >= 0)
+      data.outsideApplyList = filterList
+    }
     return {
       ...toRefs(data),
       handleSizeChange,
@@ -414,7 +485,10 @@ export default defineComponent({
       editFormRef,
       editDialogClosed,
       editDept,
-      removeDeptById
+      removeDeptById,
+      examPass,
+      examDeny,
+      filterByName
     };
 
   }
