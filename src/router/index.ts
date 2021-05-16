@@ -11,14 +11,17 @@ import Status from "@/subpages/status/status.vue";
 import RealSalary from "@/subpages/realSalary/RealSalary.vue";
 import AnalyseEmployee from "@/subpages/analyse/analyse_employee/analyseEmployee.vue";
 import AnalyseSalary from "@/subpages/analyse/analyse_salary/analyseSalary.vue";
-import OutsideExam from "@/subpages/outsideExam/outsideExam.vue"
+import OutsideExam from "@/subpages/outsideExam/outsideExam.vue";
+import ProjectExam from "@/subpages/projectExam/projectExam.vue";
+import MoreWorkExam from "@/subpages/moreWorkExam/moreWorkExam.vue";
 import EmpHome from "@/emppages/EmpHome/EmpHome.vue";
 import EmpInfo from "@/emppages/EmpInfo/EmpInfo.vue";
-import EmpTodayOvertime from "@/emppages/EmpTodayOvertime/empTodayOvertime.vue"
-import EmpMonthOvertime from '@/emppages/EmpMonthOvertime/EmpMonthOvertime.vue'
-import EmpBasicSalary from "@/emppages/EmpBasicSalary/EmpBasicSalary.vue"
-import EmpRealSalary from "@/emppages/EmpRealSalary/EmpRealSalary.vue"
-import EmpOutSideApply from "@/emppages/EmpOutSideApply/EmpOutSideApply.vue"
+import EmpTodayOvertime from "@/emppages/EmpTodayOvertime/empTodayOvertime.vue";
+import EmpMonthOvertime from "@/emppages/EmpMonthOvertime/EmpMonthOvertime.vue";
+import EmpBasicSalary from "@/emppages/EmpBasicSalary/EmpBasicSalary.vue";
+import EmpRealSalary from "@/emppages/EmpRealSalary/EmpRealSalary.vue";
+import EmpOutSideApply from "@/emppages/EmpOutSideApply/EmpOutSideApply.vue";
+import EmpProjectApply from "@/emppages/EmpProjectApply/EmpProjectApply.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -78,6 +81,14 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/outsideExam",
         component: OutsideExam
+      },
+      {
+        path: "/projectExam",
+        component: ProjectExam
+      },
+      {
+        path: "/moreWorkExam",
+        component: MoreWorkExam
       }
     ]
   },
@@ -103,14 +114,17 @@ const routes: Array<RouteRecordRaw> = [
         component: EmpBasicSalary
       },
       {
-        path:"/empRealSalary",
+        path: "/empRealSalary",
         component: EmpRealSalary
       },
       {
-        path:"/empOutSideApply",
+        path: "/empOutSideApply",
         component: EmpOutSideApply
       },
-
+      {
+        path: "/empProjectApply",
+        component: EmpProjectApply
+      }
     ]
   },
 ];
