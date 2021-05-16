@@ -4,21 +4,21 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>审批管理</el-breadcrumb-item>
-      <el-breadcrumb-item>加班审批</el-breadcrumb-item>
+      <el-breadcrumb-item>出差审批</el-breadcrumb-item>
     </el-breadcrumb>
     <!--  卡片视图区域  -->
     <el-card>
       <el-row :gutter="20">
         <el-col :span="9">
           <!--  搜索框和添加区域  -->
-          <el-input placeholder="请输入内容" v-model="filterName" clearable @clear="getUserList">
+          <el-input placeholder="可查询审批通过/拒绝/未审批" v-model="filterName" clearable @clear="getUserList">
             <template #append>
               <el-button icon="el-icon-search" @click="filterByName(filterName)"></el-button>
             </template>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <!--          <el-button type="primary" @click="addDialogVisible=true">添加状态</el-button>-->
+          <el-button type="primary" @click="addDialogFun">添加申请</el-button>
         </el-col>
       </el-row>
       <!-- 用户列表区域 -->
@@ -35,7 +35,10 @@
         <el-table-column label="操作" width="120px">
           <template #default="scope">
             <!-- 修改 -->
-            <el-button size="mini" type="warning" @click="showEditDialog(scope.row.id)">审批/查看</el-button>
+            <el-button size="mini" type="info" icon="el-icon-edit" @click="showEditDialog(scope.row.id)"></el-button>
+            <!-- 删除 -->
+            <el-button size="mini" type="danger" icon="el-icon-delete"
+                       @click="removeApplyById(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,23 +47,36 @@
   </div>
   <!--添加部门对话框-->
   <el-dialog
-      title="添加考勤"
+      title="添加申请"
       v-model="addDialogVisible"
       width="50%"
       @close="addDialogClosed">
     <div>
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px">
+      <el-form :model="addForm" ref="addFormRef" label-width="100px">
         <el-form-item label="id" prop="id">
-          <el-input v-model="addForm.id"></el-input>
+          <el-input v-model="addForm.id" disabled></el-input>
         </el-form-item>
         <el-form-item label="员工id" prop="employee_id">
-          <el-input v-model="addForm.employee_id"></el-input>
+          <el-input v-model="addForm.employee_id" disabled></el-input>
         </el-form-item>
-        <el-form-item label="迟到早退" prop="later">
-          <el-input v-model="addForm.later"></el-input>
+        <el-form-item label="加班日期" prop="moreWorkDate">
+          <el-input v-model="addForm.moreWorkDate"></el-input>
         </el-form-item>
-        <el-form-item label="缺勤旷工" prop="absent">
-          <el-input v-model="addForm.absent"></el-input>
+        <el-form-item label="开始时间" prop="endDate">
+          <el-input v-model="addForm.startTime"></el-input>
+        </el-form-item>
+        <el-form-item label="结束时间" prop="days">
+          <el-input v-model="addForm.endTime"></el-input>
+        </el-form-item>
+        <el-form-item label="加班时长" prop="fromArea">
+          <el-input v-model="addForm.moreWorkHours"></el-input>
+        </el-form-item>
+        <el-form-item label="审批状态" prop="toArea">
+          <el-input v-model="addForm.isExam" disabled></el-input>
+        </el-form-item>
+
+        <el-form-item label="加班津贴" prop="extraMoney">
+          <el-input v-model="addForm.extraMoney"></el-input>
         </el-form-item>
       </el-form>
     </div>
@@ -73,7 +89,7 @@
   </el-dialog>
   <!-- 修改部门对话框 -->
   <el-dialog
-      title="出差审批/查看"
+      title="出差申请"
       v-model="editDialogVisible"
       width="50%"
       @close="editDialogClosed">
@@ -85,30 +101,30 @@
         <el-input v-model="editForm.employee_id" disabled></el-input>
       </el-form-item>
       <el-form-item label="加班日期" prop="moreWorkDate">
-        <el-input v-model="editForm.moreWorkDate" disabled></el-input>
+        <el-input v-model="editForm.moreWorkDate"></el-input>
       </el-form-item>
       <el-form-item label="开始时间" prop="startTime">
-        <el-input v-model="editForm.startTime" disabled></el-input>
+        <el-input v-model="editForm.startTime"></el-input>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-input v-model="editForm.endTime" disabled></el-input>
+        <el-input v-model="editForm.endTime"></el-input>
       </el-form-item>
       <el-form-item label="加班时长" prop="moreWorkHours">
-        <el-input v-model="editForm.moreWorkHours" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="加班津贴" prop="extraMoney">
-        <el-input v-model="editForm.extraMoney" disabled></el-input>
+        <el-input v-model="editForm.moreWorkHours"></el-input>
       </el-form-item>
       <el-form-item label="审批状态" prop="toArea">
         <el-input v-model="editForm.isExam" disabled></el-input>
+      </el-form-item>
+
+      <el-form-item label="加班津贴" prop="extraMoney">
+        <el-input v-model="editForm.extraMoney"></el-input>
       </el-form-item>
 
     </el-form>
     <template #footer>
     <span class="dialog-footer">
       <el-button @click="editDialogVisible = false">取 消</el-button>
-      <el-button type="success" @click="examPass">审批通过</el-button>
-      <el-button type="danger" @click="examDeny">审批拒绝</el-button>
+      <el-button type="primary" @click="editApply">确 认</el-button>
     </span>
     </template>
   </el-dialog>
@@ -130,19 +146,20 @@ import {
   api_removeStatus
 } from "@/utils/api/status/status"
 
+import {useRouter} from "vue-router"
 import {
-  api_editSalary,
-  api_getBasicSalaryByEmployeeID,
-  api_getBasicSalaryByID
-} from "@/utils/api/basicSalary/basicSalary"
-import {api_editMoreWorkApply, api_getMoreWorkApply, api_getMoreWorkApplyByID} from "@/utils/api/moreWork/moreWork"
+  api_addMoreWorkApply, api_editMoreWorkApply,
+  api_getMoreWorkApply,
+  api_getMoreWorkApplyByID,
+  api_removeMoreWorkApply
+} from "@/utils/api/moreWork/moreWork"
 
 export default defineComponent({
   name: "dept",
   setup() {
-
+    const router = useRouter()
     const data = reactive({
-
+      id: router.currentRoute.value.query.id,
       //查询
       queryInfo: {
         query: "",
@@ -156,8 +173,12 @@ export default defineComponent({
       addForm: {
         id: "",
         employee_id: "",
-        later: "",
-        absent: "",
+        moreWorkDate:"",
+        startTime: "",
+        endTime: "",
+        moreWorkHours: "",
+        isExam: "",
+        extraMoney: ""
       },
       addFormRules: {
         id: [
@@ -218,7 +239,7 @@ export default defineComponent({
       editForm: {
         id: "",
         employee_id: "",
-        moreWorkDate: "",
+        moreWorkDate:"",
         startTime: "",
         endTime: "",
         moreWorkHours: "",
@@ -286,7 +307,8 @@ export default defineComponent({
       if (res.meta.code !== 200) {
         ElMessage({type: "error", message: "服务器开小差了", duration: 1800});
       }
-      data.moreWorkApplyList = res.data.moreWorkApplyList;
+      data.moreWorkApplyList = JSON.parse(JSON.stringify(res.data.moreWorkApplyList));
+      data.moreWorkApplyList = data.moreWorkApplyList.filter(item => item.employee_id == data.id)
       data.total = res.data.total;
       let promiseList = data.moreWorkApplyList.map(async val => {
 
@@ -294,6 +316,7 @@ export default defineComponent({
         val.employee_name = res2.data[0].name
       })
       await Promise.all(promiseList)
+
     };
     onBeforeMount(async () => {
       await getUserList();
@@ -331,11 +354,11 @@ export default defineComponent({
         }
       });
 
-      const {data: res} = await api_addStatus(data.addForm);
+      const {data: res} = await api_addMoreWorkApply(data.addForm);
       if (res.meta.code !== 200) {
         return ElMessage({
           type: "error",
-          message: "员工id或id重复"
+          message: "id重复"
         });
       }
       ElMessage({
@@ -398,7 +421,7 @@ export default defineComponent({
       });
     };
     //根据id删除对应部门信息
-    const removeDeptById = async (id) => {
+    const removeApplyById = async (id) => {
       //弹框询问用户是否删除数据
       // data.deleteDialogVisible = true;
       const confirmResult = await ElMessageBox.confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -412,59 +435,37 @@ export default defineComponent({
           message: "已取消删除"
         });
       } else {
-        const {data: res} = await api_removeStatus(id);
+        const {data: res} = await api_removeMoreWorkApply(id);
         if (res.meta.code !== 200) {
           return ElMessage({
             type: "error",
             message: "删除失败"
           });
         }
-        getUserList();
+        await getUserList();
         return ElMessage({
           type: "success",
           message: "删除成功"
         });
       }
     };
-    const examPass = async () => {
-      if (data.editForm.isExam !== "未审批") {
-        ElMessage({
-          type:'error',
-          message: "您已经审批过啦~",
-          duration: 1500
-        })
-        return
-      }
-      data.editForm.isExam = "审批通过"
+    const editApply = async () => {
       await api_editMoreWorkApply(data.editForm)
-      const res = await api_getBasicSalaryByEmployeeID(data.editForm.employee_id)
-      console.log("examPass", res.data.data[0])
-      let newSalary = JSON.parse(JSON.stringify(res.data.data[0]));
-      newSalary.moreWorkMoney += Number(data.editForm.extraMoney);
-      console.log("newSalary", newSalary, "xx", data.editForm.extraMoney)
-      await api_editSalary(newSalary)
       data.editDialogVisible = false
       await getUserList()
 
     }
-    const examDeny = async () => {
-      if (data.editForm.isExam !== "未审批") {
-        ElMessage({
-          type:'error',
-          message: "您已经审批过啦~",
-          duration: 1500
-        })
-        return
-      }
-      data.editForm.isExam = "审批拒绝"
-      await api_editMoreWorkApply(data.editForm)
-      data.editDialogVisible = false
-      await getUserList()
-    }
     const filterByName = async (name) => {
       await getUserList()
-      let filterList = data.moreWorkApplyList.filter(item => item.employee_name.indexOf(name) >= 0)
+      let filterList = data.moreWorkApplyList.filter(item => item.isExam.indexOf(name) >= 0)
       data.moreWorkApplyList = filterList
+    }
+    //添加申请
+    const addDialogFun = () => {
+      data.addDialogVisible = true
+      data.addForm.employee_id = data.id
+      data.addForm.id = data.total + 1
+      data.addForm.isExam = "未审批"
     }
     return {
       ...toRefs(data),
@@ -478,10 +479,10 @@ export default defineComponent({
       editFormRef,
       editDialogClosed,
       editDept,
-      removeDeptById,
-      examPass,
-      examDeny,
-      filterByName
+      removeApplyById,
+      editApply,
+      filterByName,
+      addDialogFun
     };
 
   }

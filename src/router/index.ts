@@ -14,6 +14,7 @@ import AnalyseSalary from "@/subpages/analyse/analyse_salary/analyseSalary.vue";
 import OutsideExam from "@/subpages/outsideExam/outsideExam.vue";
 import ProjectExam from "@/subpages/projectExam/projectExam.vue";
 import MoreWorkExam from "@/subpages/moreWorkExam/moreWorkExam.vue";
+import RecardExam from "@/subpages/recardExam/recardExam.vue";
 import EmpHome from "@/emppages/EmpHome/EmpHome.vue";
 import EmpInfo from "@/emppages/EmpInfo/EmpInfo.vue";
 import EmpTodayOvertime from "@/emppages/EmpTodayOvertime/empTodayOvertime.vue";
@@ -22,6 +23,8 @@ import EmpBasicSalary from "@/emppages/EmpBasicSalary/EmpBasicSalary.vue";
 import EmpRealSalary from "@/emppages/EmpRealSalary/EmpRealSalary.vue";
 import EmpOutSideApply from "@/emppages/EmpOutSideApply/EmpOutSideApply.vue";
 import EmpProjectApply from "@/emppages/EmpProjectApply/EmpProjectApply.vue";
+import EmpMoreWorkApply from "@/emppages/EmpMoreWorkApply/EmpMoreWorkApply.vue";
+import EmpRecardApply from "@/emppages/EmpRecardApply/EmpRecardApply.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -89,6 +92,10 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/moreWorkExam",
         component: MoreWorkExam
+      },
+      {
+        path: "/recardExam",
+        component: RecardExam
       }
     ]
   },
@@ -124,6 +131,14 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/empProjectApply",
         component: EmpProjectApply
+      },
+      {
+        path: "/empMoreWorkApply",
+        component: EmpMoreWorkApply
+      },
+      {
+        path: "/empRecardApply",
+        component: EmpRecardApply
       }
     ]
   },
